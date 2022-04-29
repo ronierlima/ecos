@@ -1,0 +1,15 @@
+version: '3.7'
+services:
+  oisol-api:
+    build: .
+    container_name: oisol-api
+    ports:
+      - 8802:8080
+    restart: always
+    image: hub.sps.ce.gov.br/oisol/oisol-api
+    volumes:
+      - /opt/sps/anexos/oisol:/app/anexos
+    deploy:
+      resources:
+        limits:
+          memory: 4096M
