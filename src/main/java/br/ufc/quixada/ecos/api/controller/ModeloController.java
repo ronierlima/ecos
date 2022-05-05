@@ -1,0 +1,101 @@
+package br.ufc.quixada.ecos.api.controller;
+
+import br.ufc.quixada.ecos.api.model.ModeloModel;
+import br.ufc.quixada.ecos.domain.filter.ModeloFilter;
+import br.ufc.quixada.ecos.domain.model.Anexo;
+import br.ufc.quixada.ecos.api.assembler.ModeloInputDisassembler;
+import br.ufc.quixada.ecos.api.assembler.ModeloModelAssembler;
+import br.ufc.quixada.ecos.api.model.input.AnexoInput;
+import br.ufc.quixada.ecos.api.model.input.ModeloInput;
+import br.ufc.quixada.ecos.domain.model.Modelo;
+import br.ufc.quixada.ecos.domain.repository.ModeloRepository;
+import br.ufc.quixada.ecos.domain.service.CadastroModeloService;
+import br.ufc.quixada.ecos.infrastructure.repository.spec.ModeloSpecs;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.Valid;
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+@RestController
+@RequestMapping(path = "/modelos", produces = MediaType.APPLICATION_JSON_VALUE)
+public class ModeloController {
+
+	@Autowired
+	private CadastroModeloService cadastroModelo;
+
+	@Autowired
+	private ModeloRepository modeloRepository;
+	
+	@Autowired
+	private ModeloModelAssembler modeloModelAssembler;
+	
+	@Autowired
+	private ModeloInputDisassembler modeloInputDisassembler;
+
+	@GetMapping
+	public Page<ModeloModel> pesquisar(ModeloFilter filtro, @PageableDefault(size = 10) Pageable pageable) {
+
+		Page<Modelo> modelosPage = modeloRepository.findAll(ModeloSpecs.usandoFiltro(filtro), pageable);
+
+		List<ModeloModel> modelosModel = modeloModelAssembler.toCollectionModel(modelosPage.getContent());
+
+		PageImpl<ModeloModel> modelosModelPage = new PageImpl<>(modelosModel, pageable, modelosPage.getTotalElements());
+
+		return modelosModelPage;
+	}
+
+	@GetMapping("/{codigoModelo}")
+	public ModeloModel buscar(@PathVariable UUID codigoModelo) {
+		return modeloModelAssembler.toModel(cadastroModelo.buscarOuFalhar(codigoModelo));
+	}
+
+	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@ResponseStatus(HttpStatus.CREATED)
+	public void criar(@Valid ModeloInput modeloInput, @Valid AnexoInput anexoInput) throws IOException {
+
+		MultipartFile modeloArquivo = anexoInput.getModelo();
+		MultipartFile preview = anexoInput.getPreview();
+
+		Anexo modeloAnexo = new Anexo();
+		Anexo previewAnexo = new Anexo();
+
+		modeloAnexo.setContentType(modeloArquivo.getContentType());
+		modeloAnexo.setTamanho(modeloArquivo.getSize());
+		modeloAnexo.setNomeArquivo(modeloArquivo.getOriginalFilename());
+
+		previewAnexo.setContentType(preview.getContentType());
+		previewAnexo.setTamanho(preview.getSize());
+		previewAnexo.setNomeArquivo(preview.getOriginalFilename());
+
+		Modelo modelo = modeloInputDisassembler.toDomainObject(modeloInput);
+
+		modelo.setArquivoModelo(modeloAnexo);
+		modelo.setArquivoPreviewModelo(previewAnexo);
+
+		cadastroModelo.salvar(modelo, modeloArquivo.getInputStream(), preview.getInputStream());
+
+	}
+
+	@PutMapping("/{codigoModelo}")
+	public ModeloModel editar(@PathVariable UUID codigoModelo, @RequestBody @Valid ModeloInput modeloInput) {
+
+			Modelo modeloAtual = cadastroModelo.buscarOuFalhar(codigoModelo);
+
+			modeloInputDisassembler.copyToDomainObject(modeloInput, modeloAtual);
+
+			return modeloModelAssembler.toModel(cadastroModelo.salvar(modeloAtual));
+
+	}
+
+}
