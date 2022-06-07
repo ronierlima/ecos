@@ -20,7 +20,19 @@ public class MinioAnexoStorageService implements AnexoStorageService {
 
     @Override
     public InputStream recuperar(String nomeArquivo) {
-        return null;
+        try{
+            InputStream obj = minioClient.getObject(
+                    GetObjectArgs.builder()
+                            .bucket(storageProperties.getMinio().getBucketName())
+                            .object(nomeArquivo)
+                            .build()
+            );
+
+            return  obj;
+
+        }catch (Exception e){
+            throw new StorageException("Não foi possível recuperar arquivo.", e);
+        }
     }
 
     @Override
@@ -32,14 +44,13 @@ public class MinioAnexoStorageService implements AnexoStorageService {
 
             InputStream is = novoAnexo.getInputStream();
 
-            ObjectWriteResponse response =  minioClient.putObject(
+            minioClient.putObject(
                     PutObjectArgs.builder()
                             .bucket(storageProperties.getMinio().getBucketName())
                             .object(caminhoArquivo)
                             .stream(is, is.available(), -1)
                             .build()
             );
-           //String nome = String.valueOf(response.object()).replace(caminhoRelativo, "");
 
         } catch (Exception e) {
             throw new StorageException(e.getMessage());
@@ -48,12 +59,19 @@ public class MinioAnexoStorageService implements AnexoStorageService {
 
     @Override
     public void removerCaminho(String nomeAnexo, String caminhoRelativo) {
+        try{
+            String caminhoArquivo = caminhoRelativo + nomeAnexo;
 
+            minioClient.removeObject(
+                    RemoveObjectArgs.builder()
+                            .bucket(storageProperties.getMinio().getBucketName())
+                            .object(caminhoArquivo)
+                            .build()
+            );
+        }catch (Exception e){
+            throw new StorageException("Falha ao apagar arquivo " + nomeAnexo);
+        }
     }
 
-    @Override
-    public void limparPasta(String caminho) {
-
-    }
 
 }

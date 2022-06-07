@@ -12,10 +12,8 @@ public class UsuarioModel {
 
 	private UUID codigo;
 	private String nome;
-	private String login;
 	private String email;
 	private String instituicao;
 	private Boolean ativo;
-	private List<GrupoModel> grupos;
 	private List<ModeloModel> modelos;
 }

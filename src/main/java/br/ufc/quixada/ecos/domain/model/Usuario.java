@@ -33,9 +33,6 @@ public class Usuario {
 	
 	@NotBlank
 	private String nome;
-	
-	@NotBlank
-	private String login;
 
 	@Email
 	@NotBlank
@@ -43,11 +40,6 @@ public class Usuario {
 
 	@NotBlank
 	private String senha;
-	
-	@ManyToMany
-	@JoinTable(name = "usuario_grupo", joinColumns = @JoinColumn(name = "usuario_id"),
-			inverseJoinColumns = @JoinColumn(name = "grupo_id"))
-	private Set<Grupo> grupos = new HashSet<>();
 
 	private String instituicao;
 
@@ -65,20 +57,8 @@ public class Usuario {
 	private void gerarCodigo() {
 		setCodigo(UUID.randomUUID());
 	}
-	
-	public boolean removerGrupo(Grupo grupo) {
-		return getGrupos().remove(grupo);
-	}
-	
-	public boolean adicionarGrupo(Grupo grupo) {
-		return getGrupos().add(grupo);
-	}
-	
 	public boolean isNovo() {
 		return getId() == null;
 	}
 
-	public List<String> getGruposListString() {
-		return getGrupos().stream().map(Grupo::getNome).collect(Collectors.toList());
-	}
 }

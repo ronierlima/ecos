@@ -1,6 +1,7 @@
 package br.ufc.quixada.ecos.api.controller;
 
 import br.ufc.quixada.ecos.api.model.ModeloModel;
+import br.ufc.quixada.ecos.domain.exception.EntidadeNaoEncontradaException;
 import br.ufc.quixada.ecos.domain.filter.ModeloFilter;
 import br.ufc.quixada.ecos.domain.model.Anexo;
 import br.ufc.quixada.ecos.api.assembler.ModeloInputDisassembler;
@@ -9,20 +10,25 @@ import br.ufc.quixada.ecos.api.model.input.AnexoInput;
 import br.ufc.quixada.ecos.api.model.input.ModeloInput;
 import br.ufc.quixada.ecos.domain.model.Modelo;
 import br.ufc.quixada.ecos.domain.repository.ModeloRepository;
+import br.ufc.quixada.ecos.domain.service.AnexoStorageService;
 import br.ufc.quixada.ecos.domain.service.CadastroModeloService;
 import br.ufc.quixada.ecos.infrastructure.repository.spec.ModeloSpecs;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -42,6 +48,9 @@ public class ModeloController {
 	
 	@Autowired
 	private ModeloInputDisassembler modeloInputDisassembler;
+
+	@Autowired
+	private AnexoStorageService anexoStorageService;
 
 	@GetMapping
 	public Page<ModeloModel> pesquisar(ModeloFilter filtro, @PageableDefault(size = 10) Pageable pageable) {
@@ -98,4 +107,42 @@ public class ModeloController {
 
 	}
 
+	@GetMapping(value = "/{codigoModelo}/arquivo")
+	public ResponseEntity<InputStreamResource> servirArquivo(@PathVariable UUID codigoModelo) {
+		try {
+			Modelo modelo = cadastroModelo.buscarOuFalhar(codigoModelo);
+
+			MediaType mediaTypeAnexo = MediaType.parseMediaType(modelo.getArquivoModelo().getContentType());
+
+
+			InputStream inputStream = anexoStorageService.recuperar("modelos/"  + modelo.getArquivoModelo().getCodigo());
+
+			return ResponseEntity.ok()
+					.header("Content-Disposition", "attachment; filename=" + modelo.getArquivoModelo().getNomeArquivo())
+					.contentType(mediaTypeAnexo)
+					.body(new InputStreamResource(inputStream));
+
+		} catch (EntidadeNaoEncontradaException e) {
+			return ResponseEntity.notFound().build();
+		}
+	}
+
+	@GetMapping(value = "/{codigoModelo}/preview")
+	public ResponseEntity<InputStreamResource> servirPreview(@PathVariable UUID codigoModelo) {
+		try {
+			Modelo modelo = cadastroModelo.buscarOuFalhar(codigoModelo);
+
+			MediaType mediaTypeAnexo = MediaType.parseMediaType(modelo.getArquivoPreviewModelo().getContentType());
+
+			InputStream inputStream = anexoStorageService.recuperar("previews/"  + modelo.getArquivoPreviewModelo().getCodigo());
+
+			return ResponseEntity.ok()
+					.header("Content-Disposition", "attachment; filename=" + modelo.getArquivoPreviewModelo().getNomeArquivo())
+					.contentType(mediaTypeAnexo)
+					.body(new InputStreamResource(inputStream));
+
+		} catch (EntidadeNaoEncontradaException e) {
+			return ResponseEntity.notFound().build();
+		}
+	}
 }

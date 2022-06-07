@@ -10,9 +10,6 @@ import javax.validation.constraints.NotBlank;
 @Getter
 public class RecuperarSenhaInput {
 
-	@NotBlank
-	private String login;
-	
 	@Email
 	@NotBlank
 	private String email;

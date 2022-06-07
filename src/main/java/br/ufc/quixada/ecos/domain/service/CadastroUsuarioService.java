@@ -2,7 +2,6 @@ package br.ufc.quixada.ecos.domain.service;
 
 import br.ufc.quixada.ecos.domain.exception.EntidadeNaoEncontradaException;
 import br.ufc.quixada.ecos.domain.exception.NegocioException;
-import br.ufc.quixada.ecos.domain.model.Grupo;
 import br.ufc.quixada.ecos.domain.model.Usuario;
 import br.ufc.quixada.ecos.domain.repository.UsuarioRepository;
 import br.ufc.quixada.ecos.infrastructure.util.GerarSenhaRandom;
@@ -13,9 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,10 +22,6 @@ public class CadastroUsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
-
-    @Autowired
-    private CadastroGrupoService cadastroGrupo;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -48,11 +41,11 @@ public class CadastroUsuarioService {
     public Usuario salvar(Usuario usuario) {
         usuarioRepository.detach(usuario);
 
-        Optional<Usuario> usuarioExistente = usuarioRepository.findByLogin(usuario.getLogin());
+        Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(usuario.getEmail());
 
         if (usuarioExistente.isPresent() && !usuarioExistente.get().equals(usuario)) {
             throw new NegocioException(
-                    String.format("Já existe um usuário cadastrado com o login %s", usuario.getLogin()));
+                    String.format("Já existe um usuário cadastrado com o email %s", usuario.getEmail()));
         }
 
 
@@ -62,11 +55,6 @@ public class CadastroUsuarioService {
         String senhaAleatoria = null;
 
         if (isUsuarioNovo) {
-            if (usuario.getGrupos() != null) {
-                usuario.setGrupos(usuario.getGrupos().stream()
-                        .map(g -> cadastroGrupo.buscarOuFalhar(g.getCodigo()))
-                        .collect(Collectors.toSet()));
-            }
             senhaAleatoria = GerarSenhaRandom.gerarSenhaAleatoria();
             usuario.setSenha(passwordEncoder.encode(senhaAleatoria));
         }
@@ -98,22 +86,6 @@ public class CadastroUsuarioService {
         usuario.setSenha(passwordEncoder.encode(novaSenha));
     }
 
-    @Transactional
-    public void desassociarGrupo(UUID codigoUsuario, UUID codigoGrupo) {
-        Usuario usuario = buscarOuFalhar(codigoUsuario);
-        Grupo grupo = cadastroGrupo.buscarOuFalhar(codigoGrupo);
-
-        usuario.removerGrupo(grupo);
-    }
-
-    @Transactional
-    public void associarGrupo(UUID codigoUsuario, UUID codigoGrupo) {
-        Usuario usuario = buscarOuFalhar(codigoUsuario);
-        Grupo grupo = cadastroGrupo.buscarOuFalhar(codigoGrupo);
-
-        usuario.adicionarGrupo(grupo);
-    }
-
     public Usuario buscarOuFalhar(UUID codigoUsuario) {
         return usuarioRepository.findByCodigo(codigoUsuario).orElseThrow(
                 () -> new EntidadeNaoEncontradaException(String.format(MSG_USUARIO_NAO_ENCONTRADO, codigoUsuario)));
@@ -125,9 +97,9 @@ public class CadastroUsuarioService {
         usuarioRepository.save(usuario);
     }
 
-    public void recuperarSenha(String login, String email) {
-        Usuario usuario = usuarioRepository.findByLogin(login).orElseThrow(() -> new EntidadeNaoEncontradaException(
-                String.format("Não existe um cadastro de usuário com login %s", login)));
+    public void recuperarSenha(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow(() -> new EntidadeNaoEncontradaException(
+                String.format("Não existe um cadastro de usuário com login %s", email)));
 
         if (!usuario.getEmail().equalsIgnoreCase(email)) {
             throw new NegocioException("E-mail informado não coincide com o cadastro do usuário.");

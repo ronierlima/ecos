@@ -30,37 +30,15 @@ public class ResourceServerConfigDevelopment extends WebSecurityConfigurerAdapte
 		http
 			.authorizeRequests()
 			.antMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
-				.antMatchers(HttpMethod.GET, "/grupos").permitAll()
+			.antMatchers(HttpMethod.POST, "/usuarios").permitAll()
 			.antMatchers(HttpMethod.PUT, "/usuarios/recuperar-senha").permitAll()
 			.anyRequest().authenticated()
 			.and()
 			.csrf().disable()
 			.cors().and()
-			.oauth2ResourceServer().jwt()
-			.jwtAuthenticationConverter(jwtAuthenticationConverter());
+			.oauth2ResourceServer().jwt();
 	}
-	
-	private JwtAuthenticationConverter jwtAuthenticationConverter() {
-		var jwtAuthenticationConverter = new JwtAuthenticationConverter();
-		jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
-			var authorities = jwt.getClaimAsStringList("authorities");
-			
-			if (authorities == null) {
-				authorities = Collections.emptyList();
-			}
-			
-			var scopesAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-			Collection<GrantedAuthority> grantedAuthorities = scopesAuthoritiesConverter.convert(jwt);
-			
-			grantedAuthorities.addAll(authorities.stream()
-					.map(SimpleGrantedAuthority::new)
-					.collect(Collectors.toList()));
-			
-			return grantedAuthorities;
-		});
-		
-		return jwtAuthenticationConverter;
-	}
+
 	
 	@Bean
 	@Override

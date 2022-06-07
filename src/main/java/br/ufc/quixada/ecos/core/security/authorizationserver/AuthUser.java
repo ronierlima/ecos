@@ -16,14 +16,12 @@ private static final long serialVersionUID = 1L;
 	
 	private UUID userCode;
 	private String fullName;
-	private List<String> grupos;
 	
 	public AuthUser(Usuario usuario, Collection<? extends GrantedAuthority> authorities) {
-		super(usuario.getLogin(), usuario.getSenha(), authorities);
+		super(usuario.getEmail(), usuario.getSenha(), authorities);
 		
 		this.userCode = usuario.getCodigo();
 		this.fullName = usuario.getNome();
-		this.grupos = usuario.getGruposListString();
 		
 	}
 }

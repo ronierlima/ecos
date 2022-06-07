@@ -16,22 +16,10 @@ public class UsuarioInput {
 
 	@NotBlank
 	private String nome;
-	
-	@NotBlank
-	private String login;
-	
+
 	@Email
 	@NotBlank
 	private String email;
-
-	@CPF
-	private String cpf;
-	
-	@CNPJ
-	private String cnpj;
-
-	private String cargo;
-
-	private String telefone;
+	private String instituicao;
 
 }

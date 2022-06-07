@@ -1,5 +1,9 @@
 package br.ufc.quixada.ecos.api.controller;
 
+import br.ufc.quixada.ecos.api.assembler.ModeloModelAssembler;
+import br.ufc.quixada.ecos.api.model.ModeloModel;
+import br.ufc.quixada.ecos.domain.filter.ModeloFilter;
+import br.ufc.quixada.ecos.domain.model.Modelo;
 import br.ufc.quixada.ecos.domain.model.Usuario;
 import br.ufc.quixada.ecos.api.assembler.UsuarioInputDisassembler;
 import br.ufc.quixada.ecos.api.assembler.UsuarioModelAssembler;
@@ -9,8 +13,14 @@ import br.ufc.quixada.ecos.api.model.input.SenhaInput;
 import br.ufc.quixada.ecos.api.model.input.UsuarioComGrupoInput;
 import br.ufc.quixada.ecos.api.model.input.UsuarioInput;
 import br.ufc.quixada.ecos.core.security.EcosSecurity;
+import br.ufc.quixada.ecos.domain.repository.ModeloRepository;
 import br.ufc.quixada.ecos.domain.service.CadastroUsuarioService;
+import br.ufc.quixada.ecos.infrastructure.repository.spec.ModeloSpecs;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +42,13 @@ public class UsuarioController {
     private UsuarioInputDisassembler usuarioInputDisassembler;
 
     @Autowired
-    private EcosSecurity ecosSecurity;
+    private ModeloRepository modeloRepository;
+
+    @Autowired
+    private ModeloModelAssembler modeloModelAssembler;
+
+    @Autowired
+    private EcosSecurity security;
 
 
     @GetMapping
@@ -51,7 +67,7 @@ public class UsuarioController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UsuarioModel adicionar(@RequestBody @Valid UsuarioComGrupoInput usuarioInput) {
+    public UsuarioModel adicionar(@RequestBody @Valid UsuarioInput usuarioInput) {
         Usuario usuario = usuarioInputDisassembler.toDomainObject(usuarioInput);
         usuario = cadastroUsuario.salvar(usuario);
 
@@ -76,12 +92,27 @@ public class UsuarioController {
     @PutMapping("/recuperar-senha")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void recuperarSenha(@RequestBody @Valid RecuperarSenhaInput input) {
-        cadastroUsuario.recuperarSenha(input.getLogin(), input.getEmail());
+        cadastroUsuario.recuperarSenha(input.getEmail());
     }
 
     @PutMapping("/{codigoUsuario}/ativo")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void atualizarPropriedadeAtivo(@PathVariable UUID codigoUsuario, @RequestBody Boolean ativo) {
         cadastroUsuario.atualizarPropriedadeAtivo(codigoUsuario, ativo);
+    }
+
+
+    @GetMapping("/modelos")
+    public Page<ModeloModel> pesquisar(ModeloFilter filtro, @PageableDefault(size = 10) Pageable pageable) {
+
+        filtro.setCodigoUsuario(security.getCodigoUsuario());
+
+        Page<Modelo> modelosPage = modeloRepository.findAll(ModeloSpecs.usandoFiltro(filtro), pageable);
+
+        List<ModeloModel> modelosModel = modeloModelAssembler.toCollectionModel(modelosPage.getContent());
+
+        PageImpl<ModeloModel> modelosModelPage = new PageImpl<>(modelosModel, pageable, modelosPage.getTotalElements());
+
+        return modelosModelPage;
     }
 }

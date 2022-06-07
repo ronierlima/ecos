@@ -11,7 +11,7 @@ import java.util.UUID;
 @Repository
 public interface UsuarioRepository extends CustomJpaRepository<Usuario, Long> {
 	Optional<Usuario> findByCodigo(UUID codigo);
-	Optional<Usuario> findByLogin(String login);
+	Optional<Usuario> findByEmail(String email);
 
 	List<Usuario> findAll();
 	List<Usuario> findAll(Sort sort);

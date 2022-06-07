@@ -13,7 +13,6 @@ public interface AnexoStorageService {
 
     void removerCaminho(String nomeAnexo, String caminhoRelativo);
 
-    void limparPasta(String caminho);
 
     @Builder
     @Getter

@@ -20,6 +20,10 @@ public class ModeloSpecs {
 				predicates.add(builder.equal(root.get("codigo"), filtro.getCodigo()));
 			}
 
+			if (filtro.getCodigoUsuario() != null) {
+				predicates.add(builder.equal(root.get("usuario").get("codigo"), filtro.getCodigoUsuario()));
+			}
+
 			if (filtro.getPrivado() != null) {
 				predicates.add(builder.equal(root.get("privado"), filtro.getPrivado()));
 			}

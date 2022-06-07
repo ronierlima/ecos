@@ -11,4 +11,5 @@ public class ModeloFilter {
 
 	private UUID codigo;
 	private Boolean privado;
+	private UUID codigoUsuario;
 }

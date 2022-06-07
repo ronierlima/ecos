@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,27 +28,28 @@ public class JpaUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		Usuario usuario = getUsuario(username);
 		
-		return new AuthUser(usuario, getAuthorities(usuario));
+		return new AuthUser(usuario, getAuthorities());
 	}
 
 	private Usuario getUsuario(String username) {
 
-		Usuario usuario = usuarioRepository.findByLogin(username)
+		Usuario usuario = usuarioRepository.findByEmail(username)
 				.orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o login informado"));
 				
 		if(!usuario.getAtivo()) {
 			throw new AccessDeniedException("Usuário inativo");
 		}
 
-		if(usuario.getGrupos().isEmpty()) {
-			throw new AccessDeniedException("Usuário não está associado a nenhum grupo");
-		}
 		return usuario;
 	}
-	
-	private Collection<GrantedAuthority> getAuthorities(Usuario usuario) {
-		return usuario.getGrupos().stream()
-				.map(grupo -> new SimpleGrantedAuthority(grupo.getNome().toUpperCase()))
+
+	private Collection<GrantedAuthority> getAuthorities() {
+		Set<String> roles = new HashSet<>();
+		roles.add("READ");
+		roles.add("WRITE");
+
+		return roles.stream()
+				.map(role -> new SimpleGrantedAuthority(role))
 				.collect(Collectors.toSet());
 	}
 }
