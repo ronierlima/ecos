@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.List;
 
 @Configuration
-@Profile("development")
 public class SwaggerConfig {
 
 	@Bean
