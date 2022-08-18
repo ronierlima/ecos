@@ -10,7 +10,6 @@ import java.util.UUID;
 public class AnexoModel {
 
     private UUID codigo;
-    private String nomeArquivo;
     private String contentType;
     private Long tamanho;
 }

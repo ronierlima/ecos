@@ -88,11 +88,9 @@ public class ModeloController {
 
 		modeloAnexo.setContentType(modeloArquivo.getContentType());
 		modeloAnexo.setTamanho(modeloArquivo.getSize());
-		modeloAnexo.setNomeArquivo(modeloArquivo.getOriginalFilename());
 
 		previewAnexo.setContentType(preview.getContentType());
 		previewAnexo.setTamanho(preview.getSize());
-		previewAnexo.setNomeArquivo(preview.getOriginalFilename());
 
 		Modelo modelo = modeloInputDisassembler.toDomainObject(modeloInput);
 
@@ -125,7 +123,7 @@ public class ModeloController {
 			InputStream inputStream = anexoStorageService.recuperar("modelos/"  + modelo.getArquivoModelo().getCodigo());
 
 			return ResponseEntity.ok()
-					.header("Content-Disposition", "attachment; filename=" + modelo.getArquivoModelo().getNomeArquivo())
+					.header("Content-Disposition", "attachment; filename=" + modelo.getTitulo())
 					.contentType(mediaTypeAnexo)
 					.body(new InputStreamResource(inputStream));
 
@@ -137,14 +135,14 @@ public class ModeloController {
 	@GetMapping(value = "/{codigoModelo}/preview")
 	public ResponseEntity<InputStreamResource> servirPreview(@PathVariable UUID codigoModelo) {
 		try {
-			Modelo modelo = cadastroModelo.buscarOuFalhar(codigoModelo);
+				Modelo modelo = cadastroModelo.buscarOuFalhar(codigoModelo);
 
 			MediaType mediaTypeAnexo = MediaType.parseMediaType(modelo.getArquivoPreviewModelo().getContentType());
 
 			InputStream inputStream = anexoStorageService.recuperar("previews/"  + modelo.getArquivoPreviewModelo().getCodigo());
 
 			return ResponseEntity.ok()
-					.header("Content-Disposition", "attachment; filename=" + modelo.getArquivoPreviewModelo().getNomeArquivo())
+					.header("Content-Disposition", "attachment; filename=" + modelo.getTitulo())
 					.contentType(mediaTypeAnexo)
 					.body(new InputStreamResource(inputStream));
 

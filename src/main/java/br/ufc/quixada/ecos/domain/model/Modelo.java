@@ -3,11 +3,16 @@ package br.ufc.quixada.ecos.domain.model;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Audited
@@ -29,6 +34,14 @@ public class Modelo {
 
     private String descricao = null;
     private Boolean privado = false;
+
+    @CreationTimestamp
+	@Column(name = "data_cadastro")
+	private OffsetDateTime dataCadastro;
+
+	@UpdateTimestamp
+	@Column(name = "data_atualizacao")
+	private OffsetDateTime dataAtualizacao;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "modelo_arquivo_id")

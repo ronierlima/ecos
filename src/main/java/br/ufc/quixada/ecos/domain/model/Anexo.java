@@ -29,8 +29,6 @@ public class Anexo {
     private UUID codigo;
 
     @NotBlank
-    private String nomeArquivo;
-    @NotBlank
     private String contentType;
     private Long tamanho;
 

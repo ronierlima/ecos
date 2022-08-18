@@ -11,6 +11,7 @@ public class UsuarioBasicoModel {
 
 	private UUID codigo;
 	private String nome;
+	private String email;
 	private Boolean ativo;
 	
 }

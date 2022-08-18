@@ -1,19 +1,21 @@
 package br.ufc.quixada.ecos.domain.service;
 
-import br.ufc.quixada.ecos.domain.exception.EntidadeNaoEncontradaException;
-import br.ufc.quixada.ecos.domain.exception.NegocioException;
-import br.ufc.quixada.ecos.domain.model.Usuario;
-import br.ufc.quixada.ecos.domain.repository.UsuarioRepository;
-import br.ufc.quixada.ecos.infrastructure.util.GerarSenhaRandom;
-import br.ufc.quixada.ecos.domain.service.EnvioEmailService.Mensagem;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import br.ufc.quixada.ecos.domain.exception.EntidadeNaoEncontradaException;
+import br.ufc.quixada.ecos.domain.exception.NegocioException;
+import br.ufc.quixada.ecos.domain.model.Usuario;
+import br.ufc.quixada.ecos.domain.repository.UsuarioRepository;
+import br.ufc.quixada.ecos.domain.service.EnvioEmailService.Mensagem;
+import br.ufc.quixada.ecos.infrastructure.util.GerarSenhaRandom;
 
 @Service
 public class CadastroUsuarioService {
@@ -27,9 +29,6 @@ public class CadastroUsuarioService {
 
     @Autowired
     private EnvioEmailService envioEmailService;
-
-    @Autowired
-    private CadastroAnexoService cadastroAnexo;
 
 
     public List<Usuario> findAll() {
