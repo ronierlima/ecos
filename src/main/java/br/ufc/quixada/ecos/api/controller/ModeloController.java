@@ -78,7 +78,7 @@ public class ModeloController {
 
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public void criar(@Valid ModeloInput modeloInput, @Valid AnexoInput anexoInput) throws IOException {
+	public ModeloModel criar(@Valid ModeloInput modeloInput, @Valid AnexoInput anexoInput) throws IOException {
 
 		MultipartFile modeloArquivo = anexoInput.getModelo();
 		MultipartFile preview = anexoInput.getPreview();
@@ -97,7 +97,7 @@ public class ModeloController {
 		modelo.setArquivoModelo(modeloAnexo);
 		modelo.setArquivoPreviewModelo(previewAnexo);
 
-		cadastroModelo.salvar(modelo, modeloArquivo.getInputStream(), preview.getInputStream());
+		return modeloModelAssembler.toModel(cadastroModelo.salvar(modelo, modeloArquivo.getInputStream(), preview.getInputStream()));
 
 	}
 
