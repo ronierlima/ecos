@@ -8,12 +8,8 @@
     {
       "name": "ecos.storage.local",
       "type": "br.ufc.quixada.ecos.core.storage.StorageProperties$Local",
-      "sourceType": "br.ufc.quixada.ecos.core.storage.StorageProperties"
-    },
-    {
-      "name": "ecos.storage.minio",
-      "type": "br.ufc.quixada.ecos.core.storage.StorageProperties$Minio",
-      "sourceType": "br.ufc.quixada.ecos.core.storage.StorageProperties"
+      "sourceType": "br.ufc.quixada.ecos.core.storage.StorageProperties",
+      "sourceMethod": "public br.ufc.quixada.ecos.core.storage.StorageProperties.Local getLocal() "
     },
     {
       "name": "sps.oisol.email",

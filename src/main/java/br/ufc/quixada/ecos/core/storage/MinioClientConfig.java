@@ -17,7 +17,7 @@ public class MinioClientConfig {
         try {
 
             MinioClient client = MinioClient.builder()
-                    .endpoint(storageProperties.getMinio().getUrl()).credentials(storageProperties.getMinio().getAccessName(), storageProperties.getMinio().getAccessSecret())
+                    .endpoint(storageProperties.getMinio().getUrl()).credentials(storageProperties.getMinio().getName(), storageProperties.getMinio().getSecret())
                     .build();
 
             return client;
