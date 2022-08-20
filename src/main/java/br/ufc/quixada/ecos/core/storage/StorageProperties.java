@@ -29,7 +29,7 @@ public class StorageProperties {
         private String secret;
         private String name;
         private String url;
-        private String bucketName;
-        private String defaultFolder;
+        private String bucket;
+        private String raiz;
     }
 }

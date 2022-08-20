@@ -23,7 +23,7 @@ public class MinioAnexoStorageService implements AnexoStorageService {
         try{
             InputStream obj = minioClient.getObject(
                     GetObjectArgs.builder()
-                            .bucket(storageProperties.getMinio().getBucketName())
+                            .bucket(storageProperties.getMinio().getBucket())
                             .object(nomeArquivo)
                             .build()
             );
@@ -46,7 +46,7 @@ public class MinioAnexoStorageService implements AnexoStorageService {
 
             minioClient.putObject(
                     PutObjectArgs.builder()
-                            .bucket(storageProperties.getMinio().getBucketName())
+                            .bucket(storageProperties.getMinio().getBucket())
                             .object(caminhoArquivo)
                             .stream(is, is.available(), -1)
                             .build()
@@ -64,7 +64,7 @@ public class MinioAnexoStorageService implements AnexoStorageService {
 
             minioClient.removeObject(
                     RemoveObjectArgs.builder()
-                            .bucket(storageProperties.getMinio().getBucketName())
+                            .bucket(storageProperties.getMinio().getBucket())
                             .object(caminhoArquivo)
                             .build()
             );
