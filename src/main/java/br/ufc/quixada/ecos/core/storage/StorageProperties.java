@@ -26,10 +26,10 @@ public class StorageProperties {
     @Setter
     public class Minio {
 
-        private String accessSecret;
-        private String accessName;
+        private String secret;
+        private String name;
         private String url;
-        private String bucketName;
-        private String defaultFolder;
+        private String bucket;
+        private String raiz;
     }
 }
