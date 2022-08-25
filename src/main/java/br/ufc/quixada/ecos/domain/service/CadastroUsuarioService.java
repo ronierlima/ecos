@@ -38,6 +38,7 @@ public class CadastroUsuarioService {
 
     @Transactional
     public Usuario salvar(Usuario usuario) {
+
         usuarioRepository.detach(usuario);
 
         Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(usuario.getEmail());
@@ -51,25 +52,23 @@ public class CadastroUsuarioService {
 
 
         boolean isUsuarioNovo = usuario.isNovo();
-        String senhaAleatoria = null;
 
         if (isUsuarioNovo) {
-            senhaAleatoria = GerarSenhaRandom.gerarSenhaAleatoria();
-            usuario.setSenha(passwordEncoder.encode(senhaAleatoria));
+            usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         }
 
         Usuario usuarioSalvo = usuarioRepository.save(usuario);
 
-        if (isUsuarioNovo) {
-            envioEmailService.enviar(
-                    Mensagem.builder()
-                            .assunto("Cadastro de usuário")
-                            .corpo("usuario-cadastrado.html")
-                            .variavel("usuario", usuario)
-                            .variavel("senha", senhaAleatoria)
-                            .destinatario(usuario.getEmail())
-                            .build());
-        }
+//        if (isUsuarioNovo) {
+//            envioEmailService.enviar(
+//                    Mensagem.builder()
+//                            .assunto("Cadastro de usuário")
+//                            .corpo("usuario-cadastrado.html")
+//                            .variavel("usuario", usuario)
+//                            .variavel("senha", senhaAleatoria)
+//                            .destinatario(usuario.getEmail())
+//                            .build());
+//        }
 
         return usuarioSalvo;
     }
