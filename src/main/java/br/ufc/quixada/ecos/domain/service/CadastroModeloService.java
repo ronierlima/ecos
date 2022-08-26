@@ -58,13 +58,6 @@ public class CadastroModeloService {
 
         return modeloSalvo;
     }
-    public Modelo salvar(Modelo modelo) {
-
-        if(modelo.getArquivoModelo() == null) throw new NegocioException("não é possível salvar um modelo sem arquivo");
-
-        return modeloRepository.save(modelo);
-    }
-
     @Transactional
     public void excluir(UUID codigoModelo) {
         try {

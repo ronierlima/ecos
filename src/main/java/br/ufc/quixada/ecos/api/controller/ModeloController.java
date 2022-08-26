@@ -16,14 +16,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import br.ufc.quixada.ecos.api.assembler.ModeloInputDisassembler;
@@ -101,14 +94,35 @@ public class ModeloController {
 
 	}
 
-	@PutMapping("/{codigoModelo}")
-	public ModeloModel editar(@PathVariable UUID codigoModelo, @RequestBody @Valid ModeloInput modeloInput) {
+	@RequestMapping(
+			value = "/{codigoModelo}",
+			method = RequestMethod.PUT,
+			consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+	)
+	@ResponseStatus(HttpStatus.CREATED)
+	public ModeloModel atualizar(@PathVariable UUID codigoModelo, @Valid ModeloInput modeloInput, @Valid AnexoInput anexoInput) throws IOException {
 
-			Modelo modeloAtual = cadastroModelo.buscarOuFalhar(codigoModelo);
+		Modelo modelo = cadastroModelo.buscarOuFalhar(codigoModelo);
 
-			modeloInputDisassembler.copyToDomainObject(modeloInput, modeloAtual);
+		MultipartFile modeloArquivo = anexoInput.getModelo();
+		MultipartFile preview = anexoInput.getPreview();
 
-			return modeloModelAssembler.toModel(cadastroModelo.salvar(modeloAtual));
+		Anexo modeloAnexo = new Anexo();
+		Anexo previewAnexo = new Anexo();
+
+		modeloAnexo.setContentType(modeloArquivo.getContentType());
+		modeloAnexo.setTamanho(modeloArquivo.getSize());
+
+		previewAnexo.setContentType(preview.getContentType());
+		previewAnexo.setTamanho(preview.getSize());
+
+
+		modelo.setArquivoModelo(modeloAnexo);
+		modelo.setArquivoPreviewModelo(previewAnexo);
+		modelo.setDescricao(modeloInput.getDescricao());
+		modelo.setTitulo(modeloInput.getTitulo());
+
+		return modeloModelAssembler.toModel(cadastroModelo.salvar(modelo, modeloArquivo.getInputStream(), preview.getInputStream()));
 
 	}
 
