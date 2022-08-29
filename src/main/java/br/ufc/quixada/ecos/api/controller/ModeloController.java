@@ -53,7 +53,7 @@ public class ModeloController {
 	private AnexoStorageService anexoStorageService;
 
 	@GetMapping
-	public Page<ModeloModel> pesquisar(ModeloFilter filtro, @PageableDefault(size = 10) Pageable pageable) {
+	public Page<ModeloModel> pesquisar(ModeloFilter filtro, Pageable pageable) {
 
 		Page<Modelo> modelosPage = modeloRepository.findAll(ModeloSpecs.usandoFiltro(filtro), pageable);
 
@@ -164,4 +164,11 @@ public class ModeloController {
 			return ResponseEntity.notFound().build();
 		}
 	}
+
+	@DeleteMapping("/{codigoModelo}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void remover(@PathVariable UUID codigoModelo) {
+		cadastroModelo.excluir(codigoModelo);
+	}
+
 }
