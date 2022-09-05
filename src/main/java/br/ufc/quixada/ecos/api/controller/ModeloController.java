@@ -126,6 +126,17 @@ public class ModeloController {
 
 	}
 
+    @PatchMapping("/{codigoModelo}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ModeloModel atualizarParcial(@PathVariable UUID codigoModelo, @Valid @RequestBody ModeloInput modeloInput) {
+        Modelo modelo = cadastroModelo.buscarOuFalhar(codigoModelo);
+
+        modelo.setDescricao(modeloInput.getDescricao());
+        modelo.setTitulo(modeloInput.getTitulo());
+
+        return modeloModelAssembler.toModel(cadastroModelo.salvar(modelo));
+    }
+
 	@GetMapping(value = "/{codigoModelo}/arquivo")
 	public ResponseEntity<InputStreamResource> servirArquivo(@PathVariable UUID codigoModelo) {
 		try {
@@ -145,6 +156,7 @@ public class ModeloController {
 			return ResponseEntity.notFound().build();
 		}
 	}
+
 
 	@GetMapping(value = "/{codigoModelo}/preview")
 	public ResponseEntity<InputStreamResource> servirPreview(@PathVariable UUID codigoModelo) {

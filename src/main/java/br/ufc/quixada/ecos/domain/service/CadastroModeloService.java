@@ -58,6 +58,16 @@ public class CadastroModeloService {
 
         return modeloSalvo;
     }
+
+    @Transactional
+    public Modelo salvar(Modelo modelo) {
+
+        modelo.setUsuario(this.cadastroUsuario.buscarOuFalhar(this.security.getCodigoUsuario()));
+
+        Modelo modeloSalvo = modeloRepository.save(modelo);
+
+        return modeloSalvo;
+    }
     @Transactional
     public void excluir(UUID codigoModelo) {
         try {
