@@ -65,7 +65,7 @@ public class CadastroUsuarioService {
 //                            .assunto("Cadastro de usuário")
 //                            .corpo("usuario-cadastrado.html")
 //                            .variavel("usuario", usuario)
-//                            .variavel("senha", senhaAleatoria)
+//                            .variavel("senha", usuario.getSenha())
 //                            .destinatario(usuario.getEmail())
 //                            .build());
 //        }

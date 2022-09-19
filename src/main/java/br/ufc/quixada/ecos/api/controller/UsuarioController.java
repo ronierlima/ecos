@@ -1,34 +1,33 @@
 package br.ufc.quixada.ecos.api.controller;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
+import br.ufc.quixada.ecos.api.model.input.*;
+import br.ufc.quixada.ecos.domain.exception.EntidadeNaoEncontradaException;
+import br.ufc.quixada.ecos.domain.model.Anexo;
+import br.ufc.quixada.ecos.domain.service.AnexoStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import br.ufc.quixada.ecos.api.assembler.ModeloModelAssembler;
 import br.ufc.quixada.ecos.api.assembler.UsuarioInputDisassembler;
 import br.ufc.quixada.ecos.api.assembler.UsuarioModelAssembler;
 import br.ufc.quixada.ecos.api.model.ModeloModel;
 import br.ufc.quixada.ecos.api.model.UsuarioModel;
-import br.ufc.quixada.ecos.api.model.input.RecuperarSenhaInput;
-import br.ufc.quixada.ecos.api.model.input.SenhaInput;
-import br.ufc.quixada.ecos.api.model.input.UsuarioInput;
 import br.ufc.quixada.ecos.core.security.EcosSecurity;
 import br.ufc.quixada.ecos.domain.filter.ModeloFilter;
 import br.ufc.quixada.ecos.domain.model.Modelo;
@@ -36,6 +35,7 @@ import br.ufc.quixada.ecos.domain.model.Usuario;
 import br.ufc.quixada.ecos.domain.repository.ModeloRepository;
 import br.ufc.quixada.ecos.domain.service.CadastroUsuarioService;
 import br.ufc.quixada.ecos.infrastructure.repository.spec.ModeloSpecs;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping(path = "/usuarios", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -54,6 +54,9 @@ public class UsuarioController {
 
     @Autowired
     private ModeloModelAssembler modeloModelAssembler;
+
+    @Autowired
+    private AnexoStorageService anexoStorageService;
 
     @Autowired
     private EcosSecurity security;
@@ -75,15 +78,16 @@ public class UsuarioController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UsuarioModel adicionar(@RequestBody @Valid UsuarioInput usuarioInput) {
+    public UsuarioModel adicionar(@RequestBody @Valid UsuarioComSenhaInput usuarioInput) {
         Usuario usuario = usuarioInputDisassembler.toDomainObject(usuarioInput);
         usuario = cadastroUsuario.salvar(usuario);
 
         return usuarioModelAssembler.toModel(usuario);
     }
 
-    @PutMapping("/{codigoUsuario}")
+    @PatchMapping("/{codigoUsuario}")
     public UsuarioModel atualizar(@PathVariable UUID codigoUsuario, @RequestBody @Valid UsuarioInput usuarioInput) {
+        
         Usuario usuarioAtual = cadastroUsuario.buscarOuFalhar(codigoUsuario);
         usuarioInputDisassembler.copyToDomainObject(usuarioInput, usuarioAtual);
         usuarioAtual = cadastroUsuario.salvar(usuarioAtual);
@@ -109,7 +113,6 @@ public class UsuarioController {
         cadastroUsuario.atualizarPropriedadeAtivo(codigoUsuario, ativo);
     }
 
-
     @GetMapping("/modelos")
     public Page<ModeloModel> pesquisar(ModeloFilter filtro, @PageableDefault(size = 10) Pageable pageable) {
 
@@ -122,5 +125,48 @@ public class UsuarioController {
         PageImpl<ModeloModel> modelosModelPage = new PageImpl<>(modelosModel, pageable, modelosPage.getTotalElements());
 
         return modelosModelPage;
+    }
+    @RequestMapping(
+            value = "/{codigoUsuario}/foto",
+            method = RequestMethod.PUT,
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    @ResponseStatus(HttpStatus.CREATED)
+    public void inserirFoto(@PathVariable UUID codigoUsuario,  @RequestPart(value = "file") MultipartFile fotoInput) throws IOException {
+        Usuario usuario = cadastroUsuario.buscarOuFalhar(codigoUsuario);
+        MultipartFile arquivo = fotoInput;
+
+        Anexo fotoPerfil = new Anexo();
+
+        fotoPerfil.setContentType(arquivo.getContentType());
+        fotoPerfil.setTamanho(arquivo.getSize());
+        usuario.setFotoPerfil(fotoPerfil);
+
+        AnexoStorageService.NovoAnexo novoAnexoModelo = AnexoStorageService.NovoAnexo.builder()
+                .nomeArquivo(codigoUsuario.toString())
+                .inputStream(arquivo.getInputStream()).build();
+
+        anexoStorageService.armazenarCaminho(novoAnexoModelo, "perfil/");
+
+    }
+    @GetMapping(value = "/{codigoUsuario}/foto")
+    public ResponseEntity<InputStreamResource> servirFoto(@PathVariable UUID codigoUsuario) {
+        try {
+            Usuario usuario = cadastroUsuario.buscarOuFalhar(codigoUsuario);
+
+            if(usuario.getFotoPerfil() == null)  return ResponseEntity.notFound().build();
+
+            MediaType mediaTypeAnexo = MediaType.parseMediaType(usuario.getFotoPerfil().getContentType());
+
+            InputStream inputStream = anexoStorageService.recuperar("perfil/"  + usuario.getFotoPerfil().getCodigo());
+
+            return ResponseEntity.ok()
+                    .header("Content-Disposition", "attachment; filename=" + usuario.getNome())
+                    .contentType(mediaTypeAnexo)
+                    .body(new InputStreamResource(inputStream));
+
+        } catch (EntidadeNaoEncontradaException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

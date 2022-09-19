@@ -21,6 +21,7 @@ public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
 				.authorizeRequests()
 				.antMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/modelos/**").permitAll()
+				.antMatchers(HttpMethod.GET, "/usuarios/**/foto").permitAll()
 				.antMatchers(HttpMethod.POST, "/usuarios").permitAll()
 				.antMatchers(HttpMethod.PUT, "/usuarios/recuperar-senha").permitAll()
 				.anyRequest().authenticated()

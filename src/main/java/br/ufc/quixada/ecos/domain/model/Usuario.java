@@ -3,12 +3,7 @@ package br.ufc.quixada.ecos.domain.model;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
@@ -57,6 +52,9 @@ public class Usuario {
 	@Column(name = "data_atualizacao")
 	private OffsetDateTime dataAtualizacao;
 
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "foto_id")
+	private Anexo fotoPerfil;
 	@PrePersist
 	private void gerarCodigo() {
 		setCodigo(UUID.randomUUID());
