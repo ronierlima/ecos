@@ -61,7 +61,6 @@ public class UsuarioController {
     @Autowired
     private EcosSecurity security;
 
-
     @GetMapping
     public List<UsuarioModel> listar() {
         List<Usuario> todasUsuarios = cadastroUsuario.findAll();
@@ -87,7 +86,7 @@ public class UsuarioController {
 
     @PatchMapping("/{codigoUsuario}")
     public UsuarioModel atualizar(@PathVariable UUID codigoUsuario, @RequestBody @Valid UsuarioInput usuarioInput) {
-        
+
         Usuario usuarioAtual = cadastroUsuario.buscarOuFalhar(codigoUsuario);
         usuarioInputDisassembler.copyToDomainObject(usuarioInput, usuarioAtual);
         usuarioAtual = cadastroUsuario.salvar(usuarioAtual);
@@ -133,21 +132,13 @@ public class UsuarioController {
     )
     @ResponseStatus(HttpStatus.CREATED)
     public void inserirFoto(@PathVariable UUID codigoUsuario,  @RequestPart(value = "file") MultipartFile fotoInput) throws IOException {
-        Usuario usuario = cadastroUsuario.buscarOuFalhar(codigoUsuario);
-        MultipartFile arquivo = fotoInput;
 
         Anexo fotoPerfil = new Anexo();
 
-        fotoPerfil.setContentType(arquivo.getContentType());
-        fotoPerfil.setTamanho(arquivo.getSize());
-        usuario.setFotoPerfil(fotoPerfil);
+        fotoPerfil.setContentType(fotoInput.getContentType());
+        fotoPerfil.setTamanho(fotoInput.getSize());
 
-        AnexoStorageService.NovoAnexo novoAnexoModelo = AnexoStorageService.NovoAnexo.builder()
-                .nomeArquivo(codigoUsuario.toString())
-                .inputStream(arquivo.getInputStream()).build();
-
-        anexoStorageService.armazenarCaminho(novoAnexoModelo, "perfil/");
-
+        cadastroUsuario.salvarFoto(codigoUsuario, fotoPerfil, fotoInput.getInputStream());
     }
     @GetMapping(value = "/{codigoUsuario}/foto")
     public ResponseEntity<InputStreamResource> servirFoto(@PathVariable UUID codigoUsuario) {
@@ -158,7 +149,7 @@ public class UsuarioController {
 
             MediaType mediaTypeAnexo = MediaType.parseMediaType(usuario.getFotoPerfil().getContentType());
 
-            InputStream inputStream = anexoStorageService.recuperar("perfil/"  + usuario.getFotoPerfil().getCodigo());
+            InputStream inputStream = anexoStorageService.recuperar("perfil/"  + usuario.getCodigo());
 
             return ResponseEntity.ok()
                     .header("Content-Disposition", "attachment; filename=" + usuario.getNome())

@@ -13,5 +13,5 @@ public class UsuarioBasicoModel {
 	private String nome;
 	private String email;
 	private Boolean ativo;
-	
+	private AnexoModel fotoPerfil;
 }

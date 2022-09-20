@@ -15,5 +15,6 @@ public class UsuarioModel {
 	private String email;
 	private String instituicao;
 	private Boolean ativo;
+	private AnexoModel fotoPerfil;
 	private List<ModeloModel> modelos;
 }

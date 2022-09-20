@@ -1,9 +1,11 @@
 package br.ufc.quixada.ecos.domain.service;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import br.ufc.quixada.ecos.domain.model.Anexo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,9 +30,10 @@ public class CadastroUsuarioService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private EnvioEmailService envioEmailService;
+    private CadastroAnexoService cadastroAnexo;
 
-
+    @Autowired
+    private AnexoStorageService anexoStorageService;
     public List<Usuario> findAll() {
 
         return usuarioRepository.findAll(Sort.by("ativo").descending().and(Sort.by("nome")));
@@ -47,9 +50,6 @@ public class CadastroUsuarioService {
             throw new NegocioException(
                     String.format("Já existe um usuário cadastrado com o email %s", usuario.getEmail()));
         }
-
-
-
 
         boolean isUsuarioNovo = usuario.isNovo();
 
@@ -107,6 +107,24 @@ public class CadastroUsuarioService {
         usuario.setSenha(passwordEncoder.encode(senha));
         usuarioRepository.save(usuario);
         System.out.println(senha);
+
+    }
+
+    @Transactional
+    public void salvarFoto(UUID codigoUsuario, Anexo anexo, InputStream file) {
+
+        Usuario usuario = buscarOuFalhar(codigoUsuario);
+
+        Anexo anexoSalvo = cadastroAnexo.salvar(anexo);
+
+        usuario.setFotoPerfil(anexoSalvo);
+
+
+        AnexoStorageService.NovoAnexo novoAnexoModelo = AnexoStorageService.NovoAnexo.builder()
+                .nomeArquivo(codigoUsuario.toString())
+                .inputStream(file).build();
+
+        anexoStorageService.armazenarCaminho(novoAnexoModelo, "perfil/"+usuario.getCodigo());
 
     }
 
