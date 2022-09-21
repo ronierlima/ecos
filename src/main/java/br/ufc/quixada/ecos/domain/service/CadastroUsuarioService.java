@@ -124,7 +124,7 @@ public class CadastroUsuarioService {
                 .nomeArquivo(codigoUsuario.toString())
                 .inputStream(file).build();
 
-        anexoStorageService.armazenarCaminho(novoAnexoModelo, "perfil/"+usuario.getCodigo());
+        anexoStorageService.armazenarCaminho(novoAnexoModelo, "perfil/");
 
     }
 
