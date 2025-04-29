@@ -1,17 +1,24 @@
 package br.ufc.quixada.ecos.api.controller;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.UUID;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import br.ufc.quixada.ecos.api.model.input.*;
+import br.ufc.quixada.ecos.api.assembler.ModeloModelAssembler;
+import br.ufc.quixada.ecos.api.assembler.UsuarioInputDisassembler;
+import br.ufc.quixada.ecos.api.assembler.UsuarioModelAssembler;
+import br.ufc.quixada.ecos.api.model.ModeloModel;
+import br.ufc.quixada.ecos.api.model.UsuarioModel;
+import br.ufc.quixada.ecos.api.model.input.RecuperarSenhaInput;
+import br.ufc.quixada.ecos.api.model.input.SenhaInput;
+import br.ufc.quixada.ecos.api.model.input.UsuarioComSenhaInput;
+import br.ufc.quixada.ecos.api.model.input.UsuarioInput;
+import br.ufc.quixada.ecos.core.security.EcosSecurity;
 import br.ufc.quixada.ecos.domain.exception.EntidadeNaoEncontradaException;
+import br.ufc.quixada.ecos.domain.filter.ModeloFilter;
 import br.ufc.quixada.ecos.domain.model.Anexo;
+import br.ufc.quixada.ecos.domain.model.Modelo;
+import br.ufc.quixada.ecos.domain.model.Usuario;
+import br.ufc.quixada.ecos.domain.repository.ModeloRepository;
 import br.ufc.quixada.ecos.domain.service.AnexoStorageService;
+import br.ufc.quixada.ecos.domain.service.CadastroUsuarioService;
+import br.ufc.quixada.ecos.infrastructure.repository.spec.ModeloSpecs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
@@ -22,20 +29,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import br.ufc.quixada.ecos.api.assembler.ModeloModelAssembler;
-import br.ufc.quixada.ecos.api.assembler.UsuarioInputDisassembler;
-import br.ufc.quixada.ecos.api.assembler.UsuarioModelAssembler;
-import br.ufc.quixada.ecos.api.model.ModeloModel;
-import br.ufc.quixada.ecos.api.model.UsuarioModel;
-import br.ufc.quixada.ecos.core.security.EcosSecurity;
-import br.ufc.quixada.ecos.domain.filter.ModeloFilter;
-import br.ufc.quixada.ecos.domain.model.Modelo;
-import br.ufc.quixada.ecos.domain.model.Usuario;
-import br.ufc.quixada.ecos.domain.repository.ModeloRepository;
-import br.ufc.quixada.ecos.domain.service.CadastroUsuarioService;
-import br.ufc.quixada.ecos.infrastructure.repository.spec.ModeloSpecs;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.Valid;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(path = "/usuarios", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -1,13 +1,12 @@
 package br.ufc.quixada.ecos.core.security.authorizationserver;
 
-import java.util.Collection;
-import java.util.UUID;
-
+import br.ufc.quixada.ecos.domain.model.Usuario;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
-import br.ufc.quixada.ecos.domain.model.Usuario;
-import lombok.Getter;
+import java.util.Collection;
+import java.util.UUID;
 
 @Getter
 public class AuthUser extends User {

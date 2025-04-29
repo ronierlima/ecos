@@ -2,7 +2,10 @@ package br.ufc.quixada.ecos.infrastructure.service.storage;
 
 import br.ufc.quixada.ecos.core.storage.StorageProperties;
 import br.ufc.quixada.ecos.domain.service.AnexoStorageService;
-import io.minio.*;
+import io.minio.GetObjectArgs;
+import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
+import io.minio.RemoveObjectArgs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

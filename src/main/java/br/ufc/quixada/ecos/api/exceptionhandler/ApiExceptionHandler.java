@@ -308,9 +308,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(InvalidTokenException.class)
-	public ResponseEntity<OAuth2Exception> handleException(Exception e) {
-         		logger.info("Handling error: " + e.getClass().getSimpleName() + ", " + e.getMessage());
-      		return null;
+    public ResponseEntity<OAuth2Exception> handleException(Exception e) {
+        logger.info("Handling error: " + e.getClass().getSimpleName() + ", " + e.getMessage());
+        return null;
     }
 
 

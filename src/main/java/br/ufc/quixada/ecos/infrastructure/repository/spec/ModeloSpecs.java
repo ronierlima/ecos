@@ -4,7 +4,7 @@ import br.ufc.quixada.ecos.domain.filter.ModeloFilter;
 import br.ufc.quixada.ecos.domain.model.Modelo;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 
 public class ModeloSpecs {

@@ -1,24 +1,5 @@
 package br.ufc.quixada.ecos.api.controller;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.UUID;
-
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
 import br.ufc.quixada.ecos.api.assembler.ModeloInputDisassembler;
 import br.ufc.quixada.ecos.api.assembler.ModeloModelAssembler;
 import br.ufc.quixada.ecos.api.model.ModeloModel;
@@ -32,6 +13,22 @@ import br.ufc.quixada.ecos.domain.repository.ModeloRepository;
 import br.ufc.quixada.ecos.domain.service.AnexoStorageService;
 import br.ufc.quixada.ecos.domain.service.CadastroModeloService;
 import br.ufc.quixada.ecos.infrastructure.repository.spec.ModeloSpecs;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.Valid;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(path = "/modelos", produces = MediaType.APPLICATION_JSON_VALUE)

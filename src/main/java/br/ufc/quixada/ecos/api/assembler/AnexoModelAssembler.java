@@ -1,7 +1,7 @@
 package br.ufc.quixada.ecos.api.assembler;
 
-import br.ufc.quixada.ecos.domain.model.Anexo;
 import br.ufc.quixada.ecos.api.model.AnexoModel;
+import br.ufc.quixada.ecos.domain.model.Anexo;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

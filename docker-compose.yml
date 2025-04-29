@@ -1,15 +1,34 @@
-version: '3.7'
+version: "3.7"
 services:
+  postgres:
+    image: bitnami/postgresql:15
+    container_name: ecos_postgres
+    restart: always
+    environment:
+      POSTGRESQL_DATABASE: ecos_db
+      POSTGRESQL_USERNAME: ecos_user
+      POSTGRESQL_PASSWORD: ecos_password
+      POSTGRESQL_POSTGRES_PASSWORD: postgres_password
+      ALLOW_EMPTY_PASSWORD: "no"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/bitnami/postgresql
+
   minio:
     image: minio/minio:latest
-    container_name: experiments_minio
+    container_name: ecos_minio
     restart: always
     ports:
-      - '9090:9000'
-      - '9091:9001'
+      - "9000:9000"
+      - "9001:9001"
     environment:
-      - MINIO_ROOT_USER=ADMIN
-      - MINIO_ROOT_PASSWORD=senhadificil
+      - MINIO_ROOT_USER=ecos_user
+      - MINIO_ROOT_PASSWORD=ecos_password
     command: server --address ":9000" --console-address ":9001" /data
     volumes:
-      - ~/minio/data:/data
+      - minio_data:/data
+
+volumes:
+  postgres_data:
+  minio_data:

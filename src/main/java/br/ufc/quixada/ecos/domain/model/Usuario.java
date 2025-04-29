@@ -1,20 +1,17 @@
 package br.ufc.quixada.ecos.domain.model;
 
-import java.time.OffsetDateTime;
-import java.util.UUID;
-
-import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-
+import com.fasterxml.jackson.annotation.JsonRootName;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.envers.Audited;
 
-import com.fasterxml.jackson.annotation.JsonRootName;
-
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Audited
 @JsonRootName("usuario")

@@ -1,26 +1,20 @@
 package br.ufc.quixada.ecos.core.springfox;
 
-import java.util.Arrays;
-import java.util.List;
-
+import br.ufc.quixada.ecos.core.springfox.model.PageableModelSwagger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Pageable;
-
-import br.ufc.quixada.ecos.core.springfox.model.PageableModelSwagger;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.OAuthBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.AuthorizationScope;
-import springfox.documentation.service.GrantType;
-import springfox.documentation.service.ResourceOwnerPasswordCredentialsGrant;
-import springfox.documentation.service.SecurityReference;
-import springfox.documentation.service.SecurityScheme;
+import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 public class SwaggerConfig {
@@ -51,7 +45,7 @@ public class SwaggerConfig {
 
 	private SecurityScheme securityScheme() {
 		return new OAuthBuilder()
-				.name("OiSol")
+				.name("Ecos")
 				.grantTypes(grantTypes())
 				.scopes(scopes())
 				.build();
@@ -59,7 +53,7 @@ public class SwaggerConfig {
 
 	private SecurityContext securityContext() {
 		var securityReference = SecurityReference.builder()
-				.reference("OiSol")
+				.reference("Ecos")
 				.scopes(scopes().toArray(new AuthorizationScope[0]))
 				.build();
 

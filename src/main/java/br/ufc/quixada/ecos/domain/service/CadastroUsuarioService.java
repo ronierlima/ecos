@@ -1,23 +1,21 @@
 package br.ufc.quixada.ecos.domain.service;
 
-import java.io.InputStream;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
+import br.ufc.quixada.ecos.domain.exception.EntidadeNaoEncontradaException;
+import br.ufc.quixada.ecos.domain.exception.NegocioException;
 import br.ufc.quixada.ecos.domain.model.Anexo;
+import br.ufc.quixada.ecos.domain.model.Usuario;
+import br.ufc.quixada.ecos.domain.repository.UsuarioRepository;
+import br.ufc.quixada.ecos.infrastructure.util.GerarSenhaRandom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.ufc.quixada.ecos.domain.exception.EntidadeNaoEncontradaException;
-import br.ufc.quixada.ecos.domain.exception.NegocioException;
-import br.ufc.quixada.ecos.domain.model.Usuario;
-import br.ufc.quixada.ecos.domain.repository.UsuarioRepository;
-import br.ufc.quixada.ecos.domain.service.EnvioEmailService.Mensagem;
-import br.ufc.quixada.ecos.infrastructure.util.GerarSenhaRandom;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class CadastroUsuarioService {

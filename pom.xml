@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>br.gov.ce.sps</groupId>
-	<artifactId>oisol-api</artifactId>
+	<artifactId>ecos-api</artifactId>
 	<version>0.9.0</version>
 	<name>ecos-api</name>
 	<description>Projeto de Modelagem</description>

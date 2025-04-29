@@ -1,11 +1,10 @@
 package br.ufc.quixada.ecos.domain.service;
 
 import br.ufc.quixada.ecos.core.security.EcosSecurity;
-import br.ufc.quixada.ecos.domain.exception.NegocioException;
-import br.ufc.quixada.ecos.domain.repository.ModeloRepository;
 import br.ufc.quixada.ecos.domain.exception.EntidadeEmUsoException;
 import br.ufc.quixada.ecos.domain.exception.EntidadeNaoEncontradaException;
 import br.ufc.quixada.ecos.domain.model.Modelo;
+import br.ufc.quixada.ecos.domain.repository.ModeloRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
